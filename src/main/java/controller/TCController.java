@@ -5,7 +5,9 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import utils.Downloader;
 import utils.RequestBuilder;
+import view.TCView;
 
+import java.awt.event.ActionListener;
 import java.io.File;
 
 
@@ -15,17 +17,44 @@ public class TCController {
     private RequestBuilder request = null;
     private Downloader downloader = null;
     private String blog;
+    private TCView view;
+    private ActionListener actionListener;
 
-    public TCController() {
-        request = new RequestBuilder();
-        downloader = new Downloader();
-        blog = "thekidsfromkibble";
+    public TCController(TCView view) {
+        this.request = new RequestBuilder();
+        this.downloader = new Downloader();
+        this.view = view;
+        this.actionListener = null;
+    }
+
+    public void control() {
+        actionListener = e -> {
+            if (view.getBlogText().getText().equals("")) {
+                view.setTextIntoArea("Error: Please, fill in the text field.");
+            } else {
+                // Retrieve input data
+                blog = view.getBlogText().getText();
+                // Reset input data
+                view.setTextToVoid();
+                // Download all tumblr photo posts
+                view.appendTextIntoArea("Connecting...\n\n");
+                Thread thread = new Thread() {
+                    public void run() {
+                        init();
+                    }
+                };
+                thread.start();
+            }
+        };
+        view.getButton().addActionListener(actionListener);
     }
 
 
-    public void start() {
+    private void init() {
         PhotoPostsTumblrApi api = new PhotoPostsTumblrApi(blog, APIKEY);
         retrieveAllPhotoPosts(api.getReqUrl());
+
+        view.getButton().setEnabled(true);
     }
 
 
@@ -43,6 +72,8 @@ public class TCController {
         File folder = new File(blog);
         folder.mkdir();
 
+        view.appendTextIntoArea("Downloading photos...\n\n");
+
         // Retrieve all posts and save all photos
         int offset = 0;
         for (int i = 0; i < numCalls; i++) {
@@ -50,6 +81,8 @@ public class TCController {
             offset += REQ_LIMIT;
         }
         retrieveLimitedPhotoPosts(reqUrl+strLimit+numRemainderPosts+strOffset+offset);
+
+        view.appendTextIntoArea("\nPhotos saved succesfully!\n");
     }
 
 
@@ -61,7 +94,6 @@ public class TCController {
             // Some posts have multiple photos
             for (JsonElement photo : photos) {
                 String p = photo.getAsJsonObject().get("alt_sizes").getAsJsonArray().get(0).getAsJsonObject().get("url").getAsString();
-                System.out.println(p);
                 savePhoto(p);
             }
         }
@@ -74,6 +106,7 @@ public class TCController {
         String ext = photoFileName.substring(photoFileName.length()-3, photoFileName.length());
 
         downloader.savePhotoFromUrl(photoUrl, blog + "/" + photoFileName, ext);
+        view.appendTextIntoArea(blog + "/" + photoFileName + "\n");
     }
 
 }
