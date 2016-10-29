@@ -19,9 +19,8 @@ public class RequestBuilder {
      * HTTP GET Request
      * @param myUrl - URL to make the HTTP request
      * @return the HTTP response in JSON format
-     * @throws Exception
      */
-    public JsonElement get(String myUrl) throws Exception {
+    public JsonElement get(String myUrl) {
 
         try {
             URL urlObj = new URL(myUrl);
