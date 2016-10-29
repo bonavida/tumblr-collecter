@@ -11,9 +11,9 @@ import java.net.URL;
 /**
  * A class that represents an HTTP Request
  */
-public class Request {
+public class RequestBuilder {
 
-    public Request() {}
+    public RequestBuilder() {}
 
     /**
      * HTTP GET Request
@@ -21,7 +21,7 @@ public class Request {
      * @return the HTTP response in JSON format
      * @throws Exception
      */
-    public JsonElement sendGet(String myUrl) throws Exception {
+    public JsonElement get(String myUrl) throws Exception {
 
         try {
             URL urlObj = new URL(myUrl);
