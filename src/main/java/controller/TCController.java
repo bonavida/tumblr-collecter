@@ -81,7 +81,7 @@ public class TCController {
                 File folder = new File(blog);
                 folder.mkdir();
 
-                view.appendTextIntoArea("Downloading photos...\n\n");
+                view.appendTextIntoArea("Downloading photos...\n(This could take several minutes)\n\n");
 
                 // Retrieve all posts and save all photos
                 int offset = 0;
