@@ -18,8 +18,6 @@ public class Downloader {
             URL url = new URL(photoUrl);
             photo = ImageIO.read(url);
 
-
-
             ImageIO.write(photo, ext, new File(photoFilePath));
 
         } catch (IOException ex) {

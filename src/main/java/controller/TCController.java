@@ -62,27 +62,38 @@ public class TCController {
         final String strOffset = "&offset=";
         final String strLimit = "&limit=";
 
-        // Get number of total posts, number of requests to call and number of remainder posts
-        int numTotalPosts = Integer.parseInt(request.get(reqUrl).getAsJsonObject().get("response").getAsJsonObject()
-                .get("total_posts").getAsString());
-        int numCalls = numTotalPosts / REQ_LIMIT;
-        int numRemainderPosts = numTotalPosts % REQ_LIMIT;
+        JsonElement res = request.get(reqUrl);
 
-        // Create folder with blog name
-        File folder = new File(blog);
-        folder.mkdir();
+        if (res == null) {
+            view.appendTextIntoArea("Error: Tumblr blog not found.");
+        } else {
+            // Get number of total posts, number of requests to call and number of remainder posts
+            int numTotalPosts = Integer.parseInt(res.getAsJsonObject().get("response").getAsJsonObject()
+                    .get("total_posts").getAsString());
 
-        view.appendTextIntoArea("Downloading photos...\n\n");
+            if (numTotalPosts == 0) {
+                view.appendTextIntoArea("This tumblr blog doesn't have any photo posts.");
+            } else {
+                int numCalls = numTotalPosts / REQ_LIMIT;
+                int numRemainderPosts = numTotalPosts % REQ_LIMIT;
 
-        // Retrieve all posts and save all photos
-        int offset = 0;
-        for (int i = 0; i < numCalls; i++) {
-            retrieveLimitedPhotoPosts(reqUrl+strLimit+REQ_LIMIT+strOffset+offset);
-            offset += REQ_LIMIT;
+                // Create folder with blog name
+                File folder = new File(blog);
+                folder.mkdir();
+
+                view.appendTextIntoArea("Downloading photos...\n\n");
+
+                // Retrieve all posts and save all photos
+                int offset = 0;
+                for (int i = 0; i < numCalls; i++) {
+                    retrieveLimitedPhotoPosts(reqUrl+strLimit+REQ_LIMIT+strOffset+offset);
+                    offset += REQ_LIMIT;
+                }
+                retrieveLimitedPhotoPosts(reqUrl+strLimit+numRemainderPosts+strOffset+offset);
+
+                view.appendTextIntoArea("\nPhotos saved succesfully!\n");
+            }
         }
-        retrieveLimitedPhotoPosts(reqUrl+strLimit+numRemainderPosts+strOffset+offset);
-
-        view.appendTextIntoArea("\nPhotos saved succesfully!\n");
     }
 
 
