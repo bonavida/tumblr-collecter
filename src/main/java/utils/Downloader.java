@@ -11,19 +11,16 @@ public class Downloader {
 
     public Downloader() {}
 
-    public void savePhotoFromUrl(String folderName, String photoUrl) {
+    public void savePhotoFromUrl(String photoUrl, String photoFilePath, String ext) {
         BufferedImage photo;
         try {
 
             URL url = new URL(photoUrl);
             photo = ImageIO.read(url);
 
-            String [] splitPhotoUrl = photoUrl.split("/");
-            // Take the last part of the split
-            String photoFileName = splitPhotoUrl[splitPhotoUrl.length-1];
-            String ext = photoFileName.substring(photoFileName.length()-3, photoFileName.length());
 
-            ImageIO.write(photo, ext, new File(folderName + "/" + photoFileName));
+
+            ImageIO.write(photo, ext, new File(photoFilePath));
 
         } catch (IOException ex) {
             ex.printStackTrace();

@@ -62,9 +62,18 @@ public class TCController {
             for (JsonElement photo : photos) {
                 String p = photo.getAsJsonObject().get("alt_sizes").getAsJsonArray().get(0).getAsJsonObject().get("url").getAsString();
                 System.out.println(p);
-                downloader.savePhotoFromUrl(blog, p);
+                savePhoto(p);
             }
         }
+    }
+
+    private void savePhoto(String photoUrl) {
+        String [] splitPhotoUrl = photoUrl.split("/");
+        // Take the last part of the split
+        String photoFileName = splitPhotoUrl[splitPhotoUrl.length-1];
+        String ext = photoFileName.substring(photoFileName.length()-3, photoFileName.length());
+
+        downloader.savePhotoFromUrl(photoUrl, blog + "/" + photoFileName, ext);
     }
 
 }
