@@ -27,8 +27,10 @@ public class TCController {
         this.actionListener = null;
     }
 
+
     public void control() {
         actionListener = e -> {
+            view.setProgressBar(0);
             if (view.getBlogText().getText().equals("")) {
                 view.setTextIntoArea("Error: Please, fill in the text field.");
             } else {
@@ -58,6 +60,11 @@ public class TCController {
     }
 
 
+    /**
+     * Method that retrieves all the photo posts from a tumblr blog using the Tumblr API
+     * and saves them one by one into a folder
+     * @param reqUrl - URL to make the HTTP request
+     */
     private void retrieveAllPhotoPosts(String reqUrl) {
         final String strOffset = "&offset=";
         final String strLimit = "&limit=";
@@ -81,6 +88,8 @@ public class TCController {
                 File folder = new File(blog);
                 folder.mkdir();
 
+                view.initProgressBar(0, numTotalPosts);
+
                 view.appendTextIntoArea("Downloading photos...\n(This could take several minutes)\n\n");
 
                 // Retrieve all posts and save all photos
@@ -97,6 +106,11 @@ public class TCController {
     }
 
 
+    /**
+     * Method that retrieves the maximum number of photo posts (which is limited by the Tumblr API)
+     * and saves them into a folder
+     * @param url - URL to make the HTTP response
+     */
     private void retrieveLimitedPhotoPosts(String url) {
         JsonElement jsonResponse = request.get(url);
         JsonArray posts = jsonResponse.getAsJsonObject().get("response").getAsJsonObject().get("posts").getAsJsonArray();
@@ -107,9 +121,15 @@ public class TCController {
                 String p = photo.getAsJsonObject().get("alt_sizes").getAsJsonArray().get(0).getAsJsonObject().get("url").getAsString();
                 savePhoto(p);
             }
+            view.updateProgressBar();
         }
     }
 
+
+    /**
+     * Method that, given a URL, downloads the photo and saves it in a folder
+     * @param photoUrl - URL of the photo
+     */
     private void savePhoto(String photoUrl) {
         String [] splitPhotoUrl = photoUrl.split("/");
         // Take the last part of the split
@@ -117,7 +137,7 @@ public class TCController {
         String ext = photoFileName.substring(photoFileName.length()-3, photoFileName.length());
 
         downloader.savePhotoFromUrl(photoUrl, blog + "/" + photoFileName, ext);
-        view.appendTextIntoArea(blog + "/" + photoFileName + "\n");
+        view.appendTextIntoArea(photoFileName + "\n");
     }
 
 }
