@@ -8,5 +8,5 @@ Download all the photo posts from a [Tumblr](http://www.tumblr.com/) blog.
 
 ```
 $ cd output
-$ java -jar tumblr-collecter-v 1.1.jar
+$ java -jar tumblr-collecter-v 1.2.jar
 ```
