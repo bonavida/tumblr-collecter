@@ -21,7 +21,6 @@ public class Downloader {
             ImageIO.write(photo, ext, new File(photoFilePath));
 
         } catch (IOException ex) {
-            ex.printStackTrace();
         }
     }
 

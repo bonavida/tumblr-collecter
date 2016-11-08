@@ -113,15 +113,20 @@ public class TCController {
      */
     private void retrieveLimitedPhotoPosts(String url) {
         JsonElement jsonResponse = request.get(url);
-        JsonArray posts = jsonResponse.getAsJsonObject().get("response").getAsJsonObject().get("posts").getAsJsonArray();
-        for (JsonElement post : posts) {
-            JsonArray photos = post.getAsJsonObject().get("photos").getAsJsonArray();
-            // Some posts have multiple photos
-            for (JsonElement photo : photos) {
-                String p = photo.getAsJsonObject().get("alt_sizes").getAsJsonArray().get(0).getAsJsonObject().get("url").getAsString();
-                savePhoto(p);
+        if (jsonResponse == null) {
+            view.appendTextIntoArea("\nAn error occurred. Please try again.");
+            view.getButton().setEnabled(true);
+        } else {
+            JsonArray posts = jsonResponse.getAsJsonObject().get("response").getAsJsonObject().get("posts").getAsJsonArray();
+            for (JsonElement post : posts) {
+                JsonArray photos = post.getAsJsonObject().get("photos").getAsJsonArray();
+                // Some posts have multiple photos
+                for (JsonElement photo : photos) {
+                    String p = photo.getAsJsonObject().get("alt_sizes").getAsJsonArray().get(0).getAsJsonObject().get("url").getAsString();
+                    savePhoto(p);
+                }
+                view.updateProgressBar();
             }
-            view.updateProgressBar();
         }
     }
 
